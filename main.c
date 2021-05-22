@@ -3,7 +3,7 @@
 #include <math.h>
 const int screenWidth = 1000,screenHeight = 800;
 bool GameOver=false;
-int SnakeLen=100;
+int SnakeLen=50;
 int key_active=0,Score=0,sec=0,min=0,hour=0;
 struct Snake{
     int posX,posY,radius,scleraRadius,irisRadius;
@@ -29,9 +29,9 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Slither-Game");
     
     // Asset Loading -------------------------
-    Texture2D snakehead= LoadTexture("./assets/snake/body.png");
-    Texture2D snakebody= LoadTexture("./assets/snake/body.png");
-    Texture2D background= LoadTexture("./assets/background2.jpg");
+    Texture2D snakehead= LoadTexture("./assets/snake/snakebody.png");
+    Texture2D snakebody= LoadTexture("./assets/snake/snakebody.png");
+    Texture2D background= LoadTexture("./assets/background2.png");
     
     //Initializing Game -------------------------
     InitGame(snakehead,snakebody,200,200);
@@ -137,7 +137,7 @@ float leftdx = 0.0f, leftdy = 0.0f, leftdxx = 0.0f, leftdyy = 0.0f,rightdx = 0.0
 void UpdateDraw(float delta,Vector2 MousePos){
     if(GameOver==false){
         BeginDrawing();
-        ClearBackground(RAYWHITE);
+        ClearBackground(BLACK);
         
         Vector2 irisLeftPosition = GetMousePosition();
         Vector2 irisRightPosition = GetMousePosition();
@@ -154,7 +154,7 @@ void UpdateDraw(float delta,Vector2 MousePos){
         
         //-------------------------------------
         //Snake Left Eye:
-        Snake[0].leftEyePos=(Vector2){Headpos.x+5,Headpos.y+20};
+        Snake[0].leftEyePos=(Vector2){Headpos.x+10,Headpos.y+10};
         
         leftdx = irisLeftPosition.x - Snake[0].leftEyePos.x;
         leftdy = irisLeftPosition.y - Snake[0].leftEyePos.y;
@@ -171,7 +171,7 @@ void UpdateDraw(float delta,Vector2 MousePos){
         DrawCircleV(irisLeftPosition,Snake[0].irisRadius, BLACK);
         //-------------------------------------
         //Snake Right Eye:
-        Snake[0].rightEyePos=(Vector2){Headpos.x+25,Headpos.y+20};
+        Snake[0].rightEyePos=(Vector2){Headpos.x+25,Headpos.y+10};
         rightdx = irisRightPosition.x - Snake[0].rightEyePos.x;
         rightdy = irisRightPosition.y - Snake[0].rightEyePos.y;
 
@@ -231,8 +231,8 @@ void UpdateDraw(float delta,Vector2 MousePos){
             };
         };
         */
-        DrawText(TextFormat("Time Elapsed: %d:%d:%d",hour,min,sec),20,0,20,BLACK);
-        DrawText(TextFormat("Score: %01i", Score),screenWidth-150,0,20,PURPLE);
+        DrawText(TextFormat("Time Elapsed: %d:%d:%d",hour,min,sec),20,0,30,PURPLE);
+        DrawText(TextFormat("Score: %01i", Score),screenWidth-150,0,30,PURPLE);
         
     };
     if(GameOver==true){
@@ -257,9 +257,6 @@ float mylerp(float startpos,float endpos,float step,Vector2 UnitVector){
     float val=startpos + (difference) * step;
     return val;
 }
-
-
-
 
 float checkx=0.0f,checky=0.0f;
 Vector2 followpoint;
@@ -291,8 +288,8 @@ void UpdateInput(float delta,Vector2 MousePos,Vector2 UnitVector){
                 Snake[i].posY=Snake[i].posY;
             }
             else{
-            Snake[i].posX=Snake[i-1].posX;
-            Snake[i].posY=Snake[i-1].posY;
+            Snake[i].posX=val;
+            Snake[i].posY=val2;
             }
         }
 }
