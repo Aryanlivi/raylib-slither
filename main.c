@@ -29,7 +29,7 @@ int main(void)
     InitWindow(screenWidth, screenHeight, "Slither-Game");
     
     // Asset Loading -------------------------
-    Texture2D snakehead= LoadTexture("./assets/snake/snakebody.png");
+    Texture2D snakehead= LoadTexture("./assets/snake/snakehead.png");
     Texture2D snakebody= LoadTexture("./assets/snake/snakebody.png");
     Texture2D background= LoadTexture("./assets/background2.png");
     
@@ -92,7 +92,7 @@ void InitGame(Texture2D snakehead,Texture2D snakebody,float initialposx,float in
     Snake[0].head=snakehead;
     Snake[0].radius=20;
     Snake[0].rotation=0.0f;
-    Snake[0].scale=1.5f;
+    Snake[0].scale=2.0f;
     Snake[0].posX=initialposx;
     Snake[0].posY=initialposy;
     Snake[0].tint=RAYWHITE;
@@ -105,7 +105,7 @@ void InitGame(Texture2D snakehead,Texture2D snakebody,float initialposx,float in
     for(int i=1;i<SnakeLen;i++){
         Snake[i].body=snakebody;
         Snake[i].radius=20; 
-        Snake[i].scale=1.5f;
+        Snake[i].scale=2.0f;
         Snake[i].posX=Snake[i-1].posX-Snake[i-1].radius;
         Snake[i].posY=Snake[i-1].posY;
         Snake[i].tint=RAYWHITE;
@@ -171,7 +171,7 @@ void UpdateDraw(float delta,Vector2 MousePos){
         DrawCircleV(irisLeftPosition,Snake[0].irisRadius, BLACK);
         //-------------------------------------
         //Snake Right Eye:
-        Snake[0].rightEyePos=(Vector2){Headpos.x+25,Headpos.y+10};
+        Snake[0].rightEyePos=(Vector2){Headpos.x+30,Headpos.y+10};
         rightdx = irisRightPosition.x - Snake[0].rightEyePos.x;
         rightdy = irisRightPosition.y - Snake[0].rightEyePos.y;
 
