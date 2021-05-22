@@ -9,7 +9,7 @@ struct Snake{
     int posX,posY,radius,scleraRadius,irisRadius;
     Color tint; 
     Texture2D head,body;
-    float rotation,scale,eyeAngle;
+    float rotation,scale,eyeAngle1,eyeAngle2;
     Vector2 leftEyePos,rightEyePos;
 }Snake[1024];
 
@@ -31,6 +31,7 @@ int main(void)
     // Asset Loading -------------------------
     Texture2D snakehead= LoadTexture("./assets/snake/body.png");
     Texture2D snakebody= LoadTexture("./assets/snake/body.png");
+    Texture2D background= LoadTexture("./assets/background2.jpg");
     
     //Initializing Game -------------------------
     InitGame(snakehead,snakebody,200,200);
@@ -58,7 +59,7 @@ int main(void)
         //Returns Delta time for last frame----
         delta=GetFrameTime();
         framesCounter++;
-        
+        DrawTexture(background,0, 0, RAYWHITE);     
         if(GameOver==false){
             if (((framesCounter/fps)%2) == 1)
             {
@@ -91,20 +92,20 @@ void InitGame(Texture2D snakehead,Texture2D snakebody,float initialposx,float in
     Snake[0].head=snakehead;
     Snake[0].radius=20;
     Snake[0].rotation=0.0f;
-    Snake[0].scale=2.0f;
+    Snake[0].scale=1.5f;
     Snake[0].posX=initialposx;
     Snake[0].posY=initialposy;
     Snake[0].tint=RAYWHITE;
     
     Snake[0].leftEyePos=(Vector2){Snake[0].posX,Snake[0].posY};
     Snake[0].rightEyePos=(Vector2) { GetScreenWidth()/2.0f + 100.0f, GetScreenHeight()/2.0f };
-    Snake[0].scleraRadius=10;
+    Snake[0].scleraRadius=8;
     Snake[0].irisRadius=5;
     
     for(int i=1;i<SnakeLen;i++){
         Snake[i].body=snakebody;
         Snake[i].radius=20; 
-        Snake[i].scale=2.0f;
+        Snake[i].scale=1.5f;
         Snake[i].posX=Snake[i-1].posX-Snake[i-1].radius;
         Snake[i].posY=Snake[i-1].posY;
         Snake[i].tint=RAYWHITE;
@@ -132,11 +133,15 @@ void Grow(){
 }
 
 int blink_secs=0;
-float dx = 0.0f, dy = 0.0f, dxx = 0.0f, dyy = 0.0f;
+float leftdx = 0.0f, leftdy = 0.0f, leftdxx = 0.0f, leftdyy = 0.0f,rightdx = 0.0f,rightdy = 0.0f,rightdxx = 0.0f,rightdyy = 0.0f;
 void UpdateDraw(float delta,Vector2 MousePos){
     if(GameOver==false){
         BeginDrawing();
         ClearBackground(RAYWHITE);
+        
+        Vector2 irisLeftPosition = GetMousePosition();
+        Vector2 irisRightPosition = GetMousePosition();
+        
         ///snake:
         //Draws Snake body
         for(int i=1;i<SnakeLen;i++){
@@ -146,22 +151,42 @@ void UpdateDraw(float delta,Vector2 MousePos){
         Vector2 Headpos={Snake[0].posX,Snake[0].posY};
         DrawTextureEx(Snake[0].head,Headpos,Snake[0].rotation,Snake[0].scale,Snake[0].tint);
         
-        Snake[0].leftEyePos=(Vector2){Headpos.x+10,Headpos.y+20};
-        dx = MousePos.x - Snake[0].leftEyePos.x;
-        dy = MousePos.y - Snake[0].leftEyePos.y;
+        
+        //-------------------------------------
+        //Snake Left Eye:
+        Snake[0].leftEyePos=(Vector2){Headpos.x+5,Headpos.y+20};
+        
+        leftdx = irisLeftPosition.x - Snake[0].leftEyePos.x;
+        leftdy = irisLeftPosition.y - Snake[0].leftEyePos.y;
 
-        Snake[0].eyeAngle = atan2f(dy, dx);
+        Snake[0].eyeAngle1 = atan2f(leftdy, leftdx);
 
-        dxx = ( Snake[0].scleraRadius -  Snake[0].irisRadius)*cosf(Snake[0].eyeAngle);
-        dyy = ( Snake[0].scleraRadius - Snake[0].irisRadius)*sinf(Snake[0].eyeAngle);
+        leftdxx = ( Snake[0].scleraRadius -  Snake[0].irisRadius)*cosf(Snake[0].eyeAngle1);
+        leftdyy = ( Snake[0].scleraRadius - Snake[0].irisRadius)*sinf(Snake[0].eyeAngle1);
 
-        MousePos.x = Snake[0].leftEyePos.x + dxx;
-        MousePos.y = Snake[0].leftEyePos.y + dyy;
+        irisLeftPosition.x = Snake[0].leftEyePos.x + leftdxx;
+        irisLeftPosition.y = Snake[0].leftEyePos.y + leftdyy;
         
         DrawCircleV(Snake[0].leftEyePos, Snake[0].scleraRadius, RAYWHITE);
-        //DrawCircleV(MousePos, Snake[0].irisRadius, BROWN);
-        DrawCircleV(MousePos,Snake[0].irisRadius, BLACK);
+        DrawCircleV(irisLeftPosition,Snake[0].irisRadius, BLACK);
+        //-------------------------------------
+        //Snake Right Eye:
+        Snake[0].rightEyePos=(Vector2){Headpos.x+25,Headpos.y+20};
+        rightdx = irisRightPosition.x - Snake[0].rightEyePos.x;
+        rightdy = irisRightPosition.y - Snake[0].rightEyePos.y;
+
+        Snake[0].eyeAngle2 = atan2f(rightdy, rightdx);
+
+        rightdxx = (Snake[0].scleraRadius -  Snake[0].irisRadius)*cosf(Snake[0].eyeAngle2);
+        rightdyy = (Snake[0].scleraRadius -  Snake[0].irisRadius)*sinf(Snake[0].eyeAngle2);
+
+        irisRightPosition.x = Snake[0].rightEyePos.x + rightdxx;
+        irisRightPosition.y = Snake[0].rightEyePos.y + rightdyy;
         
+        DrawCircleV(Snake[0].rightEyePos, Snake[0].scleraRadius, RAYWHITE);
+        DrawCircleV(irisRightPosition, Snake[0].irisRadius, BLACK);
+        //-------------------------------------
+
         if(Snake[0].posX>=screenWidth && key_active==0){
             Snake[0].posX=0;
         };
