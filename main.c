@@ -187,19 +187,6 @@ void UpdateDraw(float delta,Vector2 MousePos){
         DrawCircleV(irisRightPosition, Snake[0].irisRadius, BLACK);
         //-------------------------------------
 
-        if(Snake[0].posX>=screenWidth && key_active==0){
-            Snake[0].posX=0;
-        };
-        if(Snake[0].posX<=0 && key_active==1){
-            Snake[0].posX=screenWidth;
-        };
-        if(Snake[0].posY<=0 && key_active==2){
-            Snake[0].posY=screenHeight;
-        };
-        if(Snake[0].posY>=screenHeight && key_active==3){
-            Snake[0].posY=0;
-        };
-        
         //////food:
         DrawCircle(Food.posX,Food.posY,Food.radius,Food.FoodColor);
         if(Food.alpha==255 && blink_secs==20){
