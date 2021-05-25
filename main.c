@@ -14,11 +14,12 @@ struct Snake{
     Color tint; 
     Texture2D headTex,bodyTex;
     float rotation,scale,eyeAngle1,eyeAngle2;
-    Vector2 headVel,bodyVel,lefteyePos,righteyePos;
+    Vector2 headPos,headVel,bodyVel,lefteyePos,righteyePos;
 }Snake[1024];
 
 struct Food{
-    int posX,posY,radius,alpha;
+    int radius,alpha;
+    Vector2 pos;
     Color foodColor;
 }Food;
 //-----------------------
@@ -30,8 +31,7 @@ void UpdateGame(float,Vector2,Vector2);
 //----------------------
 
 
-int main(void)
-{
+int main(void){
     // Initialization
     //--------------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "Slither-Game");
@@ -39,6 +39,7 @@ int main(void)
     // Asset Loading -------------------------
     Texture2D snakeHead= LoadTexture("./assets/snake/snakeHead.png");
     Texture2D snakeBody= LoadTexture("./assets/snake/snakeBody.png");
+    Texture2D food= LoadTexture("./assets/Food/food.png");
     Texture2D background= LoadTexture("./assets/background2.png");
     
     //Initializing Game -------------------------
@@ -116,6 +117,7 @@ void InitGame(Texture2D snakeHead,Texture2D snakeBody,float posX,float posY){
     Snake[0].scale=2.0f;
     Snake[0].posX=posX;
     Snake[0].posY=posY;
+    Snake[0].headPos=(Vector2){posX,posY};
     Snake[0].headVel=(Vector2){2,2};
     Snake[0].tint=RAYWHITE;
     //------------------------
@@ -144,8 +146,7 @@ void InitGame(Texture2D snakeHead,Texture2D snakeBody,float posX,float posY){
     //-------------------------------
     
     //Init Food:
-    Food.posX= GetRandomValue(30,screenWidth-30);
-    Food.posY= GetRandomValue(30,screenHeight-30);
+    Food.pos=(Vector2){GetRandomValue(30,screenWidth-30),GetRandomValue(30,screenHeight-30)};
     Food.radius=5;
     Food.alpha=255;
     Food.foodColor=(Color){255,0,0,Food.alpha};
@@ -164,12 +165,27 @@ void Grow(){
     }
     gameScore++;
 }
-
-void UpdateSnakeEye(Vector2 headPos){
+void UpdateSnake(void){
+    //Draws Snake bodyTex:
+        for(int i=1;i<snakeLen;i++){
+            Vector2 Bodypos={Snake[i].posX,Snake[i].posY};
+            DrawTextureEx(Snake[i].bodyTex,Bodypos,Snake[i].rotation,Snake[i].scale,Snake[i].tint);
+        }
+    
+    //Draws Snake headTex:
+        Snake[0].headPos=(Vector2){Snake[0].posX,Snake[0].posY};
+        DrawTextureEx(Snake[0].headTex,Snake[0].headPos,Snake[0].rotation,Snake[0].scale,Snake[0].tint);
+    
+    //Snake Eyes:
+        UpdateSnakeEye();
+        CheckCollision();
+        
+}
+void UpdateSnakeEye(){
     Vector2 irisLeftPosition = GetMousePosition();
     Vector2 irisRightPosition = GetMousePosition();
     //Changing Snake Left Eye:
-    Snake[0].lefteyePos=(Vector2){headPos.x+10,headPos.y+10};
+    Snake[0].lefteyePos=(Vector2){Snake[0].headPos.x+10,Snake[0].headPos.y+10};
     
     float leftdx = irisLeftPosition.x - Snake[0].lefteyePos.x;
     float leftdy = irisLeftPosition.y - Snake[0].lefteyePos.y;
@@ -186,7 +202,7 @@ void UpdateSnakeEye(Vector2 headPos){
     DrawCircleV(irisLeftPosition,Snake[0].irisRadius, BLACK);
     
     //Changing Snake Right Eye:
-    Snake[0].righteyePos=(Vector2){headPos.x+30,headPos.y+10};
+    Snake[0].righteyePos=(Vector2){Snake[0].headPos.x+30,Snake[0].headPos.y+10};
     float rightdx = irisRightPosition.x - Snake[0].righteyePos.x;
     float rightdy = irisRightPosition.y - Snake[0].righteyePos.y;
 
@@ -201,27 +217,20 @@ void UpdateSnakeEye(Vector2 headPos){
     DrawCircleV(Snake[0].righteyePos, Snake[0].scleraRadius, RAYWHITE);
     DrawCircleV(irisRightPosition, Snake[0].irisRadius, BLACK);
 }
-void UpdateSnake(void){
-    //Draws Snake bodyTex:
-        for(int i=1;i<snakeLen;i++){
-            Vector2 Bodypos={Snake[i].posX,Snake[i].posY};
-            DrawTextureEx(Snake[i].bodyTex,Bodypos,Snake[i].rotation,Snake[i].scale,Snake[i].tint);
-        }
-    
-    //Draws Snake headTex:
-        Vector2 headPos={Snake[0].posX,Snake[0].posY};
-        DrawTextureEx(Snake[0].headTex,headPos,Snake[0].rotation,Snake[0].scale,Snake[0].tint);
-    
-    //Snake Eyes:
-        UpdateSnakeEye(headPos);
-        
-}
 void UpdateFood(void){
-    DrawCircle(Food.posX,Food.posY,Food.radius,Food.foodColor);
+    DrawCircleV(Food.pos,Food.radius,Food.foodColor);       
 }
 void UpdateGameInfo(void){
     DrawText(TextFormat("Time Elapsed: %d:%d:%d",hour,min,sec),20,0,30,PURPLE);
     DrawText(TextFormat("Score: %01i", gameScore),screenWidth-150,0,30,PURPLE);
+}
+
+
+void  CheckCollision(){
+     bool iscollided=CheckCollisionCircles(Snake[0].headPos, 20, Food.pos, 20);
+     if(iscollided){
+         DrawText("Collided",200,200,20,PURPLE);
+     }
 }
 void UpdateDraw(void){
     if(isgameOver==false){
