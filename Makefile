@@ -24,14 +24,14 @@
 .PHONY: all clean
 
 # Define required raylib variables
-PROJECT_NAME       ?= raylib slither
-RAYLIB_VERSION     ?= 3.5.0
-RAYLIB_PATH        ?= C:/raylib
+PROJECT_NAME       ?= raylib_slither
+RAYLIB_VERSION     ?= 3.7.0
+RAYLIB_PATH        ?= C:\raylib\raylib
 
 # Define default options
 
 # One of PLATFORM_DESKTOP, PLATFORM_RPI, PLATFORM_ANDROID, PLATFORM_WEB
-PLATFORM           ?= PLATFORM_DESKTOP
+PLATFORM           ?= PLATFORM_WEB
 
 # Locations of your newly installed library and associated headers. See ../src/Makefile
 # On Linux, if you have installed raylib but cannot compile the examples, check that
@@ -132,11 +132,11 @@ endif
 
 ifeq ($(PLATFORM),PLATFORM_WEB)
     # Emscripten required variables
-    EMSDK_PATH         ?= D:/emsdk/emsdk
+    EMSDK_PATH         ?= C:/emsdk/emsdk-main
     EMSCRIPTEN_PATH    ?= $(EMSDK_PATH)/upstream/emscripten
     CLANG_PATH          = $(EMSDK_PATH)/upstream/bin
-    PYTHON_PATH         = $(EMSDK_PATH)/python/3.7.4-pywin32_64bit
-    NODE_PATH           = $(EMSDK_PATH)/node/12.18.1_64bit/bin
+    PYTHON_PATH         = $(EMSDK_PATH)/python/3.9.2-1_64bit
+    NODE_PATH           = $(EMSDK_PATH)/node/14.15.5_64bit/bin
     export PATH         = $(EMSDK_PATH);$(EMSCRIPTEN_PATH);$(CLANG_PATH);$(NODE_PATH);$(PYTHON_PATH);C:\raylib\MinGW\bin:$$(PATH)
 endif
 
@@ -388,7 +388,7 @@ ifeq ($(PLATFORM),PLATFORM_WEB)
 endif
 
 # Define all source files required
-PROJECT_SOURCE_FILES ?= main.c
+PROJECT_SOURCE_FILES ?= D:\raylib_slither\main.c
 
 # Define all object files from source files
 OBJS = $(patsubst %.c, %.o, $(PROJECT_SOURCE_FILES))

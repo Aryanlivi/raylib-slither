@@ -11,11 +11,12 @@ int snakeLen=5,foodAmount=10,maxrow=3,maxcol=3,gameScore=0,sec=0,min=0,hour=0;
 //Structures:
 struct Snake{
     int posX,posY,radius,scleraRadiusH,scleraRadiusV,irisRadius;
-    Color tint; 
+    Color tint;
     Texture2D headTex,bodyTex;
     float rotation,scale,eyeAngle1,eyeAngle2;
     Vector2 headPos,headVel,bodyVel,lefteyePos,righteyePos;
-}Snake[1024];
+};
+struct Snake Snake[1024];
 
 struct Food{
     int radius,row,col,frameSize;
@@ -26,7 +27,7 @@ struct Food{
 //-----------------------
 
 
-//pre-defining Functions:
+//Function Prototypes:
 void InitGame(Texture2D,Texture2D,Texture2D,float,float);
 void UpdateGame(float,Vector2,Vector2);
 //----------------------
@@ -36,23 +37,23 @@ int main(void){
     // Initialization
     //--------------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "Slither-Game");
-    
+
     // Asset Loading -------------------------
-    
-    Texture2D snakeHead= LoadTexture("./assets/snake/body.png");
-    Texture2D snakeBody= LoadTexture("./assets/snake/body.png");
+
+    Texture2D snakeHead= LoadTexture("./assets/snake/try/body2.png");
+    Texture2D snakeBody= LoadTexture("./assets/snake/try/body2.png");
     Texture2D food= LoadTexture("./assets/Food/spritesheet.png");
     Texture2D background= LoadTexture("./assets/bg3.jpg");
-    
+
     //Initializing Game -------------------------
     InitGame(snakeHead,snakeBody,food,200,200);
     int FPS=60;
     SetTargetFPS(FPS);          // Set our game to run at 10 frames-per-`
     //--------------------------------------------------------------------------------------
-    
+
     //Changes to 1 every second in 60 FPS
-    int framesCounter = 0;     
-    
+    int framesCounter = 0;
+
     //Variables ----
     float magnitude=0.0f;
     float delta=0.0f;
@@ -67,21 +68,21 @@ int main(void){
         magnitude=sqrt(pow(distanceCenter.x,2)+pow(distanceCenter.y,2));
         Vector2 unitVec=(Vector2){(distanceCenter.x/magnitude),(distanceCenter.y/magnitude)};
     //----------------------------------------
-    
+
     //Returns Delta time for last frame----
         delta=GetFrameTime();
         framesCounter++;
-    //------------------------------- 
-    
+    //-------------------------------
+
     //Background:
-        DrawTexture(background,0, 0, RAYWHITE);     
+        DrawTexture(background,0, 0, RAYWHITE);
     //---------------------------
-    
+
     //While game is running:
         if(isgameOver==false){
     //-----------------------
-    
-    //Calculate Time Elapsed:  
+
+    //Calculate Time Elapsed:
             if (((framesCounter/FPS)%2) == 1)
             {
             sec+=1;
@@ -94,11 +95,11 @@ int main(void){
                 min=0;
             }
             framesCounter = 0;
-            }   
+            }
     //---------------------------------
-        
+
     //Updates Game every frame
-            UpdateGame(delta,cursor,unitVec);  
+            UpdateGame(delta,cursor,unitVec);
         };
     //-------------------------
     }
@@ -111,19 +112,19 @@ void InitGame(Texture2D snakeHead,Texture2D snakeBody,Texture2D food,float posX,
     //Init game:
     isgameOver=false;
     //---------------
-    
+
     //Init Snake Head
     Snake[0].headTex=snakeHead;
     Snake[0].radius=20;
     Snake[0].rotation=0.0f;
-    Snake[0].scale=0.3f;
+    Snake[0].scale=0.03f;
     Snake[0].posX=posX;
     Snake[0].posY=posY;
     Snake[0].headPos=(Vector2){posX,posY};
     Snake[0].headVel=(Vector2){2,2};
     Snake[0].tint=RAYWHITE;
     //------------------------
-    
+
     //Init Snake Eyes:
     Snake[0].lefteyePos=(Vector2){Snake[0].posX,Snake[0].posY};
     Snake[0].righteyePos=(Vector2) { GetScreenWidth()/2.0f + 100.0f, GetScreenHeight()/2.0f };
@@ -131,26 +132,26 @@ void InitGame(Texture2D snakeHead,Texture2D snakeBody,Texture2D food,float posX,
     Snake[0].scleraRadiusV=10;
     Snake[0].irisRadius=5;
     //---------------------------
-    
+
     //Init Snake Body:
     for(int i=1;i<snakeLen;i++){
         Snake[i].bodyTex=snakeBody;
-        Snake[i].radius=20; 
-        Snake[i].scale=0.3f;
+        Snake[i].radius=20;
+        Snake[i].scale=0.03f;
         Snake[i].posX=Snake[i-1].posX-Snake[i-1].radius;
         Snake[i].posY=Snake[i-1].posY;
         Snake[i].bodyVel=(Vector2){15,15};
         Snake[i].tint=RAYWHITE;
         //Every alternate index:
-        if(i%2!=0){ 
+        if(i%2!=0){
         Snake[i].tint=RAYWHITE;
         };
     }
     //-------------------------------
-    
+
     //Init Food:
-   
-  
+
+
     for(int j=0;j<foodAmount;j++){
         Food[j].frameSize=52;
         Food[j].foodTex=food;
@@ -165,14 +166,14 @@ void InitGame(Texture2D snakeHead,Texture2D snakeBody,Texture2D food,float posX,
 void Grow(){
     int initialLen=snakeLen;
     if(Snake[0].scale<0.4){
-        Snake[0].scale=Snake[0].scale+0.1;
+        Snake[0].scale=Snake[0].scale+0.005;
     }
     float changeScale=Snake[0].scale;
     snakeLen+=1;
     //Init Snake Body:
     for(int i=1;i<snakeLen;i++){
         Snake[i].bodyTex= Snake[1].bodyTex;
-        Snake[i].radius=20; 
+        Snake[i].radius=20;
         Snake[i].scale=changeScale;
         Snake[i].bodyVel=(Vector2){15,15};
         //Snake[i].posX=Snake[i-1].posX;
@@ -184,7 +185,7 @@ void Grow(){
         }
         Snake[i].tint=RAYWHITE;
         //Every alternate index:
-        if(i%2!=0){ 
+        if(i%2!=0){
         Snake[i].tint=RAYWHITE;
         };
     }
@@ -197,15 +198,15 @@ void UpdateSnake(void){
             Vector2 Bodypos={Snake[i].posX,Snake[i].posY};
             DrawTextureEx(Snake[i].bodyTex,Bodypos,Snake[i].rotation,Snake[i].scale,Snake[i].tint);
         }
-    
+
     //Draws Snake headTex:
         Snake[0].headPos=(Vector2){Snake[0].posX,Snake[0].posY};
         DrawTextureEx(Snake[0].headTex,Snake[0].headPos,Snake[0].rotation,Snake[0].scale,Snake[0].tint);
-        
+
         CheckCollision();
-        
+
     //Snake Eyes:
-        UpdateSnakeEye();      
+        UpdateSnakeEye();
 }
 void UpdateSnakeEye(void){
     Vector2 irisLeftPosition = GetMousePosition();
@@ -222,12 +223,12 @@ void UpdateSnakeEye(void){
 
     irisLeftPosition.x = Snake[0].lefteyePos.x + leftdxx;
     irisLeftPosition.y = Snake[0].lefteyePos.y + leftdyy;
-    
-    
-    //DrawEllipse(Snake[0].lefteyePos.x,Snake[0].lefteyePos.y,Snake[0].scleraRadiusH,Snake[0].scleraRadiusV, RAYWHITE);   
+
+
+    //DrawEllipse(Snake[0].lefteyePos.x,Snake[0].lefteyePos.y,Snake[0].scleraRadiusH,Snake[0].scleraRadiusV, RAYWHITE);
     DrawCircleV(Snake[0].lefteyePos, Snake[0].scleraRadiusV, RAYWHITE);
     DrawCircleV(irisLeftPosition,Snake[0].irisRadius, BLACK);
-    
+
     //Changing Snake Right Eye:
     Snake[0].righteyePos=(Vector2){Snake[0].headPos.x+30,Snake[0].headPos.y+10};
     float rightdx = irisRightPosition.x - Snake[0].righteyePos.x;
@@ -240,8 +241,8 @@ void UpdateSnakeEye(void){
 
     irisRightPosition.x = Snake[0].righteyePos.x + rightdxx;
     irisRightPosition.y = Snake[0].righteyePos.y + rightdyy;
-    
-    //DrawEllipse(Snake[0].righteyePos.x,Snake[0].righteyePos.y,Snake[0].scleraRadiusH,Snake[0].scleraRadiusV, RAYWHITE);   
+
+    //DrawEllipse(Snake[0].righteyePos.x,Snake[0].righteyePos.y,Snake[0].scleraRadiusH,Snake[0].scleraRadiusV, RAYWHITE);
     DrawCircleV(Snake[0].righteyePos, Snake[0].scleraRadiusV, RAYWHITE);
     DrawCircleV(irisRightPosition, Snake[0].irisRadius, BLACK);
 }
@@ -252,7 +253,7 @@ bool condn=true;
 void UpdateFood(void){
     for(int loop=0;loop<foodAmount;loop++){
         DrawTextureRec(Food[loop].foodTex,Food[loop].rect,Food[loop].pos,RAYWHITE);
-        //DrawCircleV(Food[loop].pos,Food.radius,Food.foodColor);    
+        //DrawCircleV(Food[loop].pos,Food.radius,Food.foodColor);
     }
 }
 void UpdateGameInfo(void){
@@ -264,16 +265,16 @@ void  CheckCollision(void){
     for(int loop=0;loop<foodAmount;loop++){
         bool iscollided= CheckCollisionCircles(Snake[0].headPos, 20, Food[loop].pos, 20);
         //CheckCollisionPointCircle(Food[loop].pos,Snake[0].headPos, 20);
-       
+
         if(iscollided){
-             
+
              Grow();
-             //UnloadTexture(Food[loop].foodTex);   
+             //UnloadTexture(Food[loop].foodTex);
              Food[loop].pos=(Vector2){0,0};
              return;
         }
     }
-    
+
 }
 
 void UpdateDraw(void){
@@ -283,7 +284,7 @@ void UpdateDraw(void){
         ClearBackground(RAYWHITE);
         if(sec%10==0){
             for(int loop=0;loop<foodAmount;loop++){
-                Food[loop].pos=(Vector2){GetRandomValue(Snake[0].posX+20,screenWidth-40),GetRandomValue(Snake[0].posY+20,screenHeight-40)};  
+                Food[loop].pos=(Vector2){GetRandomValue(Snake[0].posX+20,screenWidth-40),GetRandomValue(Snake[0].posY+20,screenHeight-40)};
                 Food[loop].row=GetRandomValue(0,maxrow);
                 Food[loop].col=GetRandomValue(0,maxcol);
                 Food[loop].rect=(Rectangle){Food[loop].row*Food[loop].frameSize,Food[loop].col*Food[loop].frameSize,Food[loop].frameSize,Food[loop].frameSize};
@@ -294,7 +295,7 @@ void UpdateDraw(void){
         }
         UpdateGameInfo();
         UpdateSnake();
-      
+
     };
     if(isgameOver==true){
         ClearBackground(RAYWHITE);
@@ -302,11 +303,11 @@ void UpdateDraw(void){
         DrawText(TextFormat("Time Elapsed: %0d:%d:%d",hour,min,sec),screenWidth*0.3,screenHeight*0.4,50,PURPLE);
         DrawText(TextFormat("gameScore: %01i", gameScore),screenWidth*0.3,screenHeight*0.6,50,ORANGE);
         EndDrawing();
-        TakeScreenshot("capture.png");//bmp tga    
+        TakeScreenshot("capture.png");//bmp tga
     };
     EndDrawing();
 }
-
+//No need to make userdefined absolute funtion if using stdio.h
 float _Absolute(float n){
     if(n<0){
         n=-1*(n);
@@ -319,13 +320,13 @@ float _Lerp(float start,float end,float step,Vector2 unitVec){
     return val;
 }
 
-void UpdateInput(float delta,Vector2 mousePos,Vector2 unitVec){  
+void UpdateInput(float delta,Vector2 mousePos,Vector2 unitVec){
 
     Vector2 target;
     //Checks the distance of mouse from snake head:
     float checkx = _Absolute(mousePos.x -Snake[0].posX) ;
     float checky = _Absolute(mousePos.y - Snake[0].posY);
-    
+
     if(checkx<=100 && checkx>=40 && checky<=100 && checky>=40 ){
         target=mousePos;
     }
@@ -333,24 +334,24 @@ void UpdateInput(float delta,Vector2 mousePos,Vector2 unitVec){
         //stops snakehead if mouse stops:
         target.x=Snake[0].posX;
         target.y=Snake[0].posY;
-    } 
+    }
     else{
         //Move with limited speed towards mouse direction:
         target.x=Snake[0].posX+100*unitVec.x;
         target.y=Snake[0].posY+100*unitVec.y;
     }
-    
+
     //Head follows Mouse:
     float reqposX=_Lerp(Snake[0].posX,target.x,Snake[0].headVel.x*delta,unitVec);
     float reqposY=_Lerp(Snake[0].posY,target.y,Snake[0].headVel.y*delta,unitVec);
     Snake[0].posX=reqposX;
     Snake[0].posY=reqposY;
-    
+
     //Body follows Head:
     for(int i=snakeLen-1;i>0;i--){
         float val=_Lerp(Snake[i].posX,Snake[i-1].posX,(Snake[i].bodyVel.x)*delta,unitVec);
         float val2=_Lerp(Snake[i].posY,Snake[i-1].posY,(Snake[i].bodyVel.y)*delta,unitVec);
-        
+
         if(checkx<40 && checky<40){
             Snake[i].posX=Snake[i].posX;
             Snake[i].posY=Snake[i].posY;
@@ -364,5 +365,5 @@ void UpdateInput(float delta,Vector2 mousePos,Vector2 unitVec){
 
 void UpdateGame(float delta,Vector2 mousePos,Vector2 unitVec){
     UpdateInput(delta,mousePos,unitVec);
-    UpdateDraw(); 
+    UpdateDraw();
 }
